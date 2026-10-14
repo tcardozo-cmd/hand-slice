@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="format-detection" content="telephone=no" />
+<title>Hand Slice — Corta Frutas con la Mano</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="stage">
+    <!-- Video oculto: solo se usa como fuente para MediaPipe -->
+    <video id="input-video" playsinline webkit-playsinline="true" autoplay muted disablepictureinpicture></video>
+
+    <!-- Canvas donde se dibuja todo: cámara espejada + juego -->
+    <canvas id="game-canvas" width="1280" height="720"></canvas>
+
+    <!-- HUD durante el juego -->
+    <div id="hud" class="hidden">
+      <div id="score-box">Puntos: <span id="score-value">0</span></div>
+      <div id="lives-box">Vidas: <span id="lives-value">🍎🍎🍎🍎🍎</span></div>
+      <div id="combo-box"></div>
+    </div>
+
+    <!-- Pantalla de carga -->
+    <div id="screen-loading" class="screen">
+      <h1>🍐 Hand Slice 🍐</h1>
+      <p id="loading-text">Cargando modelo de detección de manos…</p>
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Pantalla de inicio -->
+    <div id="screen-start" class="screen hidden">
+      <h1>🍊 Hand Slice 🍊</h1>
+      <p>Corta las frutas moviendo tu mano frente a la cámara.<br/>
+         Usa el dedo índice como si fuera una espada.</p>
+      <p style="font-size: 0.9em; color: #ffdf5e;">🏆 Mejor puntaje: <span id="high-score">0</span></p>
+      <button id="btn-start" class="btn">▶ Jugar</button>
+      <button id="btn-info" class="btn btn-secondary">¿Cómo funciona?</button>
+    </div>
+
+    <!-- Panel informativo (STEAM) -->
+    <div id="screen-info" class="screen hidden">
+      <h2>¿Cómo funciona?</h2>
+      <ul>
+        <li><strong>Visión por computadora:</strong> un modelo de IA (MediaPipe Hands) detecta 21 puntos de tu mano en cada cuadro de video, en tiempo real.</li>
+        <li><strong>Física:</strong> cada fruta sigue una trayectoria parabólica (tiro parabólico) afectada por la gravedad.</li>
+        <li><strong>Geometría:</strong> el corte se detecta calculando la distancia entre el segmento de movimiento del dedo y el centro de la fruta.</li>
+        <li><strong>Audio:</strong> los sonidos se generan matemáticamente con la Web Audio API, sin archivos de sonido.</li>
+        <li><strong>Bombas 💣:</strong> aparecen de forma aleatoria. Si las cortas pierdes 1 vida completa y se reinicia tu combo.</li>
+        <li><strong>Recompensas ❤️:</strong> cada 50 puntos recuperas media vida (hasta un máximo de 5).</li>
+      </ul>
+      <button id="btn-info-close" class="btn">Volver</button>
+    </div>
+
+    <!-- Pantalla de fin de juego -->
+    <div id="screen-gameover" class="screen hidden">
+      <h1>Juego Terminado</h1>
+      <p>Puntaje final: <span id="final-score">0</span></p>
+      <p id="final-message"></p>
+      <div id="ranking-container">
+        <h3 style="color: #ffdf5e; margin-bottom: 10px;">🏆 Ranking de puntajes</h3>
+        <div id="ranking-list" style="font-size: 1.1em; line-height: 1.8;"></div>
+      </div>
+      <button id="btn-restart" class="btn">↻ Jugar de nuevo</button>
+    </div>
+
+    <!-- Aviso de error de cámara -->
+    <div id="screen-error" class="screen hidden">
+      <h1>⚠ No se pudo acceder a la cámara</h1>
+      <p id="error-text">Revisa los permisos de cámara en tu navegador y recarga la página.</p>
+    </div>
+  </div>
+
+  <!-- MediaPipe Hands + utilidades de cámara (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js" crossorigin="anonymous"></script>
+
+  <script src="main.js"></script>
+</body>
+</html>
